@@ -80,7 +80,7 @@
             </div>
         </mat-step>
         <mat-step>
-            <ng-template matStepLabel>Done</ng-template>
+            <ng-template matStepLabel>Review & Confirm</ng-template>
             <div class="box mt-3">
                 <h1 class="fw-bold">Tax filing Detail</h1>
                 <div class="row mb-3">
@@ -134,6 +134,7 @@
     </mat-stepper>
 
     <ng-container *ngIf="page == 0">
+        <mat-progress-bar class="mb-5 mt-4 " mode="determinate" value="50"></mat-progress-bar>
         <div class="ps-4">
             <button type="button" class="btn button me-4" (click)="back(stepper)">Back</button>
             <button type="button" class="btn btn-dark button" (click)="submit(stepper)">Next</button>
@@ -141,6 +142,7 @@
     </ng-container>
 
     <ng-container *ngIf="page == 1">
+        <mat-progress-bar class="mb-5 mt-4 " mode="determinate" value="100"></mat-progress-bar>
         <div class="ps-4 mb-3">
             <button type="button" class="btn button me-4" (click)="back(stepper)">Back</button>
         </div>
@@ -149,4 +151,5 @@
         </div>
     </ng-container>
 
+    
 </div>
