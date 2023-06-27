@@ -12,6 +12,7 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 })
 export class PageComponent implements OnInit {
 
+  public submitted = false
   public page = 0
   public filingType = [
     {
@@ -83,7 +84,7 @@ export class PageComponent implements OnInit {
     saleAmount: "",
     taxAmount: "",
     surcharge: "",
-    penalty: 200,
+    penalty: "200 THB",
     totalAmount: ""
   }
 
@@ -130,10 +131,10 @@ export class PageComponent implements OnInit {
 
   focusFunction(number: any, type: any) {
     if (number && type == 1) {
-      this.form.saleAmount = number.replace(',', '')
+      this.form.saleAmount = number.replace(',', '').replace('THB', '')
     }
     if (number && type == 2) {
-      this.form.taxAmount = number.replace(',', '')
+      this.form.taxAmount = number.replace(',', '').replace('THB', '')
     }
   }
 
@@ -148,10 +149,10 @@ export class PageComponent implements OnInit {
 
     if (type == 1) {
       if (number) {
-        this.form.saleAmount = formatNumber(Number(number), 'en-US', '1.2-2')
-        this.form.taxAmount = formatNumber(Number(number * 0.07), 'en-US', '1.2-2')
-        this.form.surcharge = formatNumber(Number((number * 0.07) * 0.1), 'en-US', '1.2-2')
-        this.form.totalAmount = formatNumber(Number((number * 0.07) + ((number * 0.07) * 0.1)) + 200, 'en-US', '1.2-2')
+        this.form.saleAmount = formatNumber(Number(number), 'en-US', '1.2-2') + " THB"
+        this.form.taxAmount = formatNumber(Number(number * 0.07), 'en-US', '1.2-2') + " THB"
+        this.form.surcharge = formatNumber(Number((number * 0.07) * 0.1), 'en-US', '1.2-2') + " THB"
+        this.form.totalAmount = formatNumber(Number((number * 0.07) + ((number * 0.07) * 0.1)) + 200, 'en-US', '1.2-2') + " THB"
       }
       if (!number) {
         this.form.saleAmount = ''
@@ -164,12 +165,12 @@ export class PageComponent implements OnInit {
 
     if (type == 2) {
       if (number) {
-        this.form.taxAmount = formatNumber(Number(number), 'en-US', '1.2-2')
-        if (Number(this.form.taxAmount.replace(',', '')) > (Number(this.form.saleAmount.replace(',', '')) * 0.07) - 21 && Number(this.form.taxAmount.replace(',', '')) < (Number(this.form.saleAmount.replace(',', '')) * 0.07) + 20) {
-          console.log(this.form.taxAmount.replace(',', '') * 0.1);
-          console.log(Number(this.form.taxAmount.replace(',', '')));
-          this.form.surcharge = formatNumber(Number(this.form.taxAmount.replace(',', '') * 0.1), 'en-US', '1.2-2')
-          this.form.totalAmount = formatNumber(Number(200 + (this.form.taxAmount.replace(',', '') * 0.1) + (Number(this.form.taxAmount.replace(',', '')))), 'en-US', '1.2-2')
+        this.form.taxAmount = formatNumber(Number(number), 'en-US', '1.2-2') + " THB"
+        if (Number(this.form.taxAmount.replace(',', '').replace('THB', '')) > (Number(this.form.saleAmount.replace(',', '').replace('THB', '')) * 0.07) - 21 && Number(this.form.taxAmount.replace(',', '').replace('THB', '')) < (Number(this.form.saleAmount.replace(',', '').replace('THB', '')) * 0.07) + 20) {
+          console.log(this.form.taxAmount.replace(',', '').replace('THB', '') * 0.1);
+          console.log(Number(this.form.taxAmount.replace(',', '').replace('THB', '')));
+          this.form.surcharge = formatNumber(Number(this.form.taxAmount.replace(',', '').replace('THB', '') * 0.1), 'en-US', '1.2-2') + " THB"
+          this.form.totalAmount = formatNumber(Number(200 + (this.form.taxAmount.replace(',', '').replace('THB', '') * 0.1) + (Number(this.form.taxAmount.replace(',', '').replace('THB', '')))), 'en-US', '1.2-2') + " THB"
         }
         else {
           this._snackBar.open("Invalid Tax", "", {
@@ -191,6 +192,7 @@ export class PageComponent implements OnInit {
 
   submit(stepper: MatStepper) {
     console.log(this.form);
+    this.submitted = true
     if (this.form.month == '' || this.form.year == '' || this.form.saleAmount == "" || this.form.taxAmount == "") {
       this._snackBar.open("Invalid Data", "", {
         duration: 3000, panelClass: "error",
@@ -216,6 +218,8 @@ export class PageComponent implements OnInit {
   }
 
   confirm() {
+    this.taxData = {}
+    this.getTaxData()
     this.dialog.open(ConfirmDialogComponent, {
       data: {
         title: JSON.stringify(this.taxData)
@@ -228,18 +232,18 @@ export class PageComponent implements OnInit {
       this.taxData.filingType = this.filingType[this.form.filingType].name
       this.taxData.month = this.selectedMonth[Number(this.form.month) - 1].name
       this.taxData.year = this.form.year
-      this.taxData.saleAmount = Number(this.form.saleAmount.replace(',', ''))
-      this.taxData.taxAmount = Number(this.form.taxAmount.replace(',', ''))
+      this.taxData.saleAmount = Number(this.form.saleAmount.replace(',', '').replace('THB', ''))
+      this.taxData.taxAmount = Number(this.form.taxAmount.replace(',', '').replace('THB', ''))
     }
     else {
       this.taxData.filingType = this.filingType[this.form.filingType].name
       this.taxData.month = this.selectedMonth[Number(this.form.month) - 1].name
       this.taxData.year = this.form.year
-      this.taxData.saleAmount = Number(this.form.saleAmount.replace(',', ''))
-      this.taxData.taxAmount = Number(this.form.taxAmount.replace(',', ''))
-      this.taxData.surcharge = Number(this.form.surcharge.replace(',', ''))
+      this.taxData.saleAmount = Number(this.form.saleAmount.replace(',', '').replace('THB', ''))
+      this.taxData.taxAmount = Number(this.form.taxAmount.replace(',', '').replace('THB', ''))
+      this.taxData.surcharge = Number(this.form.surcharge.replace(',', '').replace('THB', ''))
       this.taxData.penalty = 200
-      this.taxData.totalAmount = Number(this.form.totalAmount.replace(',', ''))
+      this.taxData.totalAmount = Number(this.form.totalAmount.replace(',', '').replace('THB', ''))
     }
 
   }
