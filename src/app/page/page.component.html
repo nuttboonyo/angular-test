@@ -1,0 +1,147 @@
+<h1 class="title text-center">Submit Tax Filing</h1>
+<div class="m-5">
+    <mat-stepper linear #stepper>
+        <mat-step>
+            <ng-template matStepLabel>Input Detail</ng-template>
+            <div class="box mt-3">
+                <h1 class="fw-bold">1. Tax Filing Detail</h1>
+                <p class="fw-bold">Type of filing *</p>
+                <mat-radio-group [(ngModel)]="form.filingType" (change)="changeType()">
+                    <mat-radio-button class="me-3" *ngFor="let filingType of filingType"
+                        [value]="filingType.value">{{filingType.name}}</mat-radio-button>
+                </mat-radio-group>
+                <p class="fw-bold">{{texType}} *</p>
+
+                <mat-form-field>
+                    <mat-label>Year</mat-label>
+                    <mat-select [(ngModel)]="form.year" (selectionChange)="changeDate()">
+                        <mat-option *ngFor="let year of currentYear" [value]="year">
+                            {{year}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Month</mat-label>
+                    <mat-select [(ngModel)]="form.month" (selectionChange)="changeDate()">
+                        <mat-option *ngFor="let month of saveMonth" [value]="month.value">
+                            {{month.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
+                <h1 class="fw-bold">2. Tax Computation</h1>
+                <p class="fw-bold">Provide total value taxable electronic service *</p>
+                <div class="d-flex">
+                    <p>1. Total value of taxable electronic service exclusive of VAT</p>
+                    <span class="flex-grow-1"></span>
+                    <mat-form-field class="tex-input">
+                        <input matInput  placeholder="THB" [(ngModel)]="form.saleAmount" [value]=100
+                            (focus)="focusFunction(form.saleAmount, 1)"
+                            (focusout)="focusOutFunction(form.saleAmount, 1)">
+                    </mat-form-field>
+                </div>
+                <div class="d-flex">
+                    <p>2. Total VAT to be remitted (7% of 1.)</p>
+                    <span class="flex-grow-1"></span>
+                    <mat-form-field class="tex-input">
+                        <input matInput placeholder="THB" [(ngModel)]="form.taxAmount"
+                            (focus)="focusFunction(form.taxAmount, 2)" (focusout)="focusOutFunction(form.taxAmount, 2)">
+                    </mat-form-field>
+                </div>
+                <ng-container *ngIf="form.filingType == 1">
+                    <p class="fw-bold">In case of late filing and playment, or additional filing</p>
+                    <div class="d-flex">
+                        <p>3. Surcharge</p>
+                        <span class="flex-grow-1"></span>
+                        <mat-form-field class="tex-input">
+                            <input matInput placeholder="THB" [(ngModel)]="form.surcharge" readonly>
+                        </mat-form-field>
+                    </div>
+                    <div class="d-flex">
+                        <p>4. Penalty</p>
+                        <span class="flex-grow-1"></span>
+                        <mat-form-field class="tex-input">
+                            <input matInput placeholder="THB" [(ngModel)]="form.penalty" readonly>
+                        </mat-form-field>
+                    </div>
+                    <div class="d-flex">
+                        <p>5. Total Amount of VAT, Surcharge, and Penalty to be remitted</p>
+                        <span class="flex-grow-1"></span>
+                        <mat-form-field class="tex-input">
+                            <input matInput placeholder="THB" [(ngModel)]="form.totalAmount" readonly>
+                        </mat-form-field>
+                    </div>
+                </ng-container>
+
+
+            </div>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Done</ng-template>
+            <div class="box mt-3">
+                <h1 class="fw-bold">Tax filing Detail</h1>
+                <div class="row mb-3">
+                    <label class="fw-bold col-1">Type of filing</label>
+                    <label class="col-9">{{taxData.filingType}}</label>
+                </div>
+                <div class="row mb-3">
+                    <label class="fw-bold col-1">{{texType}}</label>
+                    <label class="col-9">{{taxData.month}}  {{taxData.year}}</label>
+                </div>
+                <h1 class="fw-bold">Tax Computation</h1>
+                <div class="d-flex">
+                    <p class="fw-bold">Total value of taxable electronic service exclusive of VAT</p>
+                    <span class="flex-grow-1"></span>
+                    <p>{{form.saleAmount}} THB</p>
+                </div>
+                <div class="d-flex">
+                    <p class="fw-bold">Total VAT to be remitted</p>
+                    <span class="flex-grow-1"></span>
+                    <p>{{form.taxAmount}} THB</p>
+                </div>
+
+                <ng-container *ngIf="form.filingType == 0">
+                    <div class="d-flex">
+                        <p class="fw-bold">Total Amount Payable</p>
+                        <span class="flex-grow-1"></span>
+                        <p class="fw-bold">{{form.taxAmount}} THB</p>
+                    </div>
+                </ng-container>
+
+                <ng-container *ngIf="form.filingType == 1">
+                    <div class="d-flex">
+                        <p class="fw-bold">Surcharge</p>
+                        <span class="flex-grow-1"></span>
+                        <p>{{form.surcharge}} THB</p>
+                    </div>
+                    <div class="d-flex">
+                        <p class="fw-bold">Penalty</p>
+                        <span class="flex-grow-1"></span>
+                        <p>{{form.penalty}} THB</p>
+                    </div>
+                    <div class="d-flex">
+                        <p class="fw-bold">Total Amount of VAT, Surcharge, and Penalty to be remitted</p>
+                        <span class="flex-grow-1"></span>
+                        <p class="fw-bold">{{form.totalAmount}} THB</p>
+                    </div>
+                </ng-container>
+            </div>
+
+        </mat-step>
+    </mat-stepper>
+
+    <ng-container *ngIf="page == 0">
+        <div class="ps-3">
+            <button type="button" class="btn button me-4" (click)="back(stepper)">Back</button>
+            <button type="button" class="btn btn-dark button" (click)="submit(stepper)">Next</button>
+        </div>
+    </ng-container>
+
+    <ng-container *ngIf="page == 1">
+        <div class="text-center">
+            <button type="button" class="btn btn-dark button" (click)="confirm()">Confirm and Submit</button>
+        </div>
+    </ng-container>
+    
+</div>
